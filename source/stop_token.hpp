@@ -53,7 +53,7 @@ struct __stop_state {
   void __remove_token_reference() noexcept {
     auto __oldState =
         __state_.fetch_sub(__token_ref_increment, std::memory_order_acq_rel);
-    if (__oldState < (__token_ref_increment + __token_ref_increment)) {
+    if (__oldState < (__token_ref_increment + __source_ref_increment)) {
       delete this;
     }
   }
@@ -409,7 +409,7 @@ class stop_source {
  public:
   stop_source() : __state_(new __stop_state()) {}
 
-  explicit stop_source(std::nostopstate_t) noexcept : __state_(nullptr) {}
+  explicit stop_source(nostopstate_t) noexcept : __state_(nullptr) {}
 
   ~stop_source() {
     if (__state_ != nullptr) {
@@ -449,7 +449,7 @@ class stop_source {
     return __state_ != nullptr;
   }
 
-  bool request_stop() const noexcept {
+  bool request_stop() noexcept {
     if (__state_ != nullptr) {
       return __state_->__request_stop();
     }
